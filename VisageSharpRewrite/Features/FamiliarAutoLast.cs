@@ -9,6 +9,7 @@ using Ensage.Common.Extensions;
 using Ensage.Common.Objects;
 using SharpDX;
 using VisageSharpRewrite.Abilities;
+using Ensage.Common.Menu;
 
 namespace VisageSharpRewrite.Features
 {
@@ -51,16 +52,33 @@ namespace VisageSharpRewrite.Features
         public void Execute(List<Unit> familiars)
         {
             //Update();
+                
             this.setAutoAttackMode();
             if (familiars == null) return;
-            //Console.WriteLine("familiar pos " + familiar.FirstOrDefault().Position);
-
-            if (!familiarControl.AnyEnemyCreepsAroundFamiliar(familiars))
+            //Auto Stone if under low attack dmg or health being low  
+            if (Utils.SleepCheck("stone"))
             {
-                //there is no enemy creeps around
-                //return;
+                foreach (var f in familiars)
+                {
+                    if (Variables.familiarControl.FaimiliarHasToStone(f))
+                    {
+                        Variables.familiarControl.UseStone(f);
+                    }
+                }
+                Utils.Sleep(500, "stone");
             }
-            
+
+            if (familiarControl.AnyEnemyNearFamiliar(familiars, 600))
+            {
+                familiarControl.RetreatToTowerOrFountain(familiars);
+                //disable auto last hit
+                Variables.MenuManager.AutoFamiliarLastHitMenu.SetValue(new KeyBind(Variables.MenuManager.AutoFamiliarLastHitMenu.GetValue<KeyBind>().Key, KeyBindType.Toggle, false));
+                return;
+            }
+
+
+            //Console.WriteLine("familiar pos " + familiar.FirstOrDefault().Position);
+            // If there is enemy nearby
             var AnyoneAttackingMe = ObjectManager.TrackingProjectiles.Any(x => x.Target.Name.Equals(familiars.FirstOrDefault().Name));
             //if no ally creeps nearby, go follow the nearst ally creeps
 
@@ -333,7 +351,6 @@ namespace VisageSharpRewrite.Features
             {
                 this.autoAttackMode = 0;
                 Game.ExecuteCommand("dota_player_units_auto_attack_mode " + this.autoAttackMode);
-                Console.WriteLine("mode89 is " + this.autoAttackMode);
             }
         }
 
@@ -348,8 +365,12 @@ namespace VisageSharpRewrite.Features
             {
                 this.autoAttackMode = 2;
                 Game.ExecuteCommand("dota_player_units_auto_attack_mode " + this.autoAttackMode);
-                Console.WriteLine("mode is " + this.autoAttackMode);
             }
+        }
+
+        public void OnDraw()
+        {
+
         }
         
 

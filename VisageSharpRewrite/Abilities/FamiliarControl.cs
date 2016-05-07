@@ -25,9 +25,9 @@ namespace VisageSharpRewrite.Abilities
                     && Variables.Hero.Spellbook.Spell4.Cooldown <= 200 - Variables.Hero.Spellbook.Spell4.Level * 20 - 5;              
         }
 
-        public bool FaimiliarCanStoneEnemies(Hero target, Unit f)
+        public bool FamiliarCanStoneEnemies(Hero target, Unit f)
         {
-            return f.Spellbook.SpellQ.CanBeCasted() && f.BonusDamage < 20 && f.Distance2D(target) <= 100
+            return f.Spellbook.SpellQ.CanBeCasted() && (f.BonusDamage < 20 || f.Health <= 3) && f.Distance2D(target) <= 100
                 // exclude a situation where familiars are in the summon phase
                 && Variables.Hero.Spellbook.Spell4.Cooldown <= 200 - Variables.Hero.Spellbook.Spell4.Level * 20 - 5; 
         }
@@ -43,16 +43,16 @@ namespace VisageSharpRewrite.Abilities
             f.Attack(target);
         }
 
-        public bool AnyFamiliarNearMe(List<Unit> familiars)
+        public bool AnyFamiliarNearMe(List<Unit> familiars, int range)
         {
             return familiars.Any(x => x.IsAlive && x.IsAlive && x.Team == Variables.Hero.Team
-                                && x.Distance2D(Variables.Hero) <= 500 && x.IsControllable);
+                                && x.Distance2D(Variables.Hero) <= range && x.IsControllable);
         }
 
-        public bool AnyEnemyNearFamiliar(List<Unit> familiars)
+        public bool AnyEnemyNearFamiliar(List<Unit> familiars, int range)
         {
             return ObjectManager.GetEntities<Hero>().Any(x => x.IsAlive && x.Team != Variables.Hero.Team
-                                                        && familiars.Any(y => x.Distance2D(y) <= 600));
+                                                        && familiars.Any(y => x.Distance2D(y) <= range));
         }
 
         public bool AnyEnemyCreepsAroundFamiliar(List<Unit> familiars)
@@ -73,6 +73,41 @@ namespace VisageSharpRewrite.Abilities
                                                                 && familiars.Any<Unit>(_y => _y.Distance2D(_x) < 300));
         }
 
-
+        public void RetreatToTowerOrFountain(List<Unit> familiars)
+        {
+            if (familiars == null) return;
+            var ClosestAllyTower = ObjectManager.GetEntities<Unit>().Where(x => x.ClassID == ClassID.CDOTA_BaseNPC_Tower
+                                                                                        && x.Team == Variables.Hero.Team
+                                                                                        ).OrderBy(y => y.Distance2D(familiars.FirstOrDefault()))
+                                                                                       .FirstOrDefault();
+            if(ClosestAllyTower == null)
+            {
+                if (Utils.SleepCheck("move"))
+                {
+                    foreach (var f in familiars)
+                    {
+                        if (f.CanMove())
+                        {
+                            f.Follow(ObjectManager.GetEntities<Unit>().Where(_x => _x.ClassID == ClassID.CDOTA_Unit_Fountain && _x.Team == Variables.Hero.Team).FirstOrDefault());
+                        }
+                    }
+                    Utils.Sleep(1000, "move");
+                }
+            }
+            else
+            {
+                if (Utils.SleepCheck("move"))
+                {
+                    foreach (var f in familiars)
+                    {
+                        if (f.CanMove())
+                        {
+                            f.Follow(ClosestAllyTower);
+                        }
+                    }
+                    Utils.Sleep(1000, "move");
+                }
+            }
+        }
     }
 }

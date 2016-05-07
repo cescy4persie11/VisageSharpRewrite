@@ -89,12 +89,14 @@
     <Compile Include="Bootstrap.cs" />
     <Compile Include="Features\AutoNuke.cs" />
     <Compile Include="Features\Combo.cs" />
+    <Compile Include="Features\DrawText.cs" />
     <Compile Include="Features\FamiliarAutoLast.cs" />
     <Compile Include="Features\Follow.cs" />
     <Compile Include="PowerTreadsSwitcher.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\MenuManager.cs" />
+    <Compile Include="Utilities\Sleeper.cs" />
     <Compile Include="Utilities\TargetFind.cs" />
     <Compile Include="Variables.cs" />
     <Compile Include="VisageSharp.cs" />

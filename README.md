@@ -7,3 +7,7 @@ BreakerSharp & Ability# https://github.com/Moones/EnsageSharp
 - Added Follow Mode
 - Added FamiliarAuto Last Hit
 - Added KillSteal/Auto Nuke
+
+05/07/2016
+- Added Combo Mode
+- Added Menu Drawings

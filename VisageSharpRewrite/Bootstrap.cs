@@ -20,16 +20,16 @@ namespace VisageSharpRewrite
         public void SubscribeEvents()
         {
             Events.OnLoad += this.Events_Onload;
-            //Events.OnClose += this.Events_OnClose;
+            Events.OnClose += this.Events_OnClose;
             Game.OnUpdate += this.Game_OnUpdate;
             //Game.OnWndProc += this.Game_OnWndProc;
-            //Drawing.OnDraw += this.Drawing_OnDraw;          
+            Drawing.OnDraw += this.Drawing_OnDraw;          
             Player.OnExecuteOrder += this.Player_OnExecuteOrder;
         }
 
         private void Drawing_OnDraw(EventArgs args)
         {
-            //this.visageSharp.OnDraw();
+            this.visageSharp.OnDraw();
         }
 
         private void Events_Onload(object sender, EventArgs e)
@@ -47,6 +47,8 @@ namespace VisageSharpRewrite
             this.visageSharp.OnUpdate_AutoLastHit();
             this.visageSharp.OnUpdate_AutoNuke();
             this.visageSharp.OnUpdate_Follow();
+            //this.visageSharp.OnUpdate();
+            this.visageSharp.OnUpdate_Combo();
         }
 
         private void Game_OnWndProc(WndEventArgs args)

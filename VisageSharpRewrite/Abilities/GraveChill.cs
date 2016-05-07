@@ -39,5 +39,10 @@ namespace VisageSharpRewrite.Abilities
             return this.ability.CanBeCasted() && !target.IsMagicImmune()
                     && Variables.Hero.Distance2D(target) <= this.ability.CastRange + (hasLens ? 200 : 0) + 100;
         }
+
+        public void UseOn(Hero target)
+        {
+            this.ability.UseAbility(target);
+        }
     }
 }

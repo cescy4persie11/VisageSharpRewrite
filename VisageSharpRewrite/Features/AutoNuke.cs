@@ -14,13 +14,6 @@ namespace VisageSharpRewrite.Features
 {
     public class AutoNuke
     {
-        private Hero me
-        {
-            get
-            {
-                return Variables.Hero;
-            }
-        }
 
         private SoulAssumption soulAssumption
         {
@@ -30,22 +23,14 @@ namespace VisageSharpRewrite.Features
             }
         }
 
-        private bool hasLens
-        {
-            get
-            {
-                return me.HasItem(ClassID.CDOTA_Item_Aether_Lens);
-            }
-        }
-
         public AutoNuke()
         {
 
         }
 
-        public void Execute()
+        public void Execute(Hero me)
         {
-
+            var hasLens = me.HasItem(ClassID.CDOTA_Item_Aether_Lens);
             // Auto Kill steal
             var NearbyEnemy = ObjectManager.GetEntities<Hero>().Where(x => !x.IsMagicImmune() && x.IsAlive
                                                                            && !x.IsIllusion && x.Team != me.Team
@@ -53,8 +38,10 @@ namespace VisageSharpRewrite.Features
             if (NearbyEnemy == null) return;
             var MinHpTargetNearbyEnemy = NearbyEnemy.OrderBy(x => x.Health).FirstOrDefault();
             if (MinHpTargetNearbyEnemy == null) return;
-            var killableTarget = NearbyEnemy.Where(x => x.Health <= soulAssumption.Damage(x, hasLens)).FirstOrDefault();
-            if (killableTarget == null)
+            
+            var killables = NearbyEnemy.Where(x => x.Health <= soulAssumption.Damage(x, hasLens));
+            
+            if (killables== null)
             {
                 var SoulAssumpCharges = me.Modifiers.Where(x => x.Name == "modifier_visage_soul_assumption").FirstOrDefault();
                 if (SoulAssumpCharges == null) return;
@@ -69,6 +56,7 @@ namespace VisageSharpRewrite.Features
             }
             else
             {
+                var killableTarget = killables.FirstOrDefault();
                 if (soulAssumption.CanbeCastedOn(killableTarget, hasLens))
                 {
                     if (Utils.SleepCheck("soulassumption"))
@@ -79,6 +67,29 @@ namespace VisageSharpRewrite.Features
                 }
             }
 
+        }
+
+        public void KillSteal(Hero me)
+        {
+            var hasLens = me.HasItem(ClassID.CDOTA_Item_Aether_Lens);
+            var NearbyEnemy = ObjectManager.GetEntities<Hero>().Where(x => !x.IsMagicImmune() && x.IsAlive
+                                                                           && !x.IsIllusion && x.Team != me.Team
+                                                                           && x.Distance2D(me) <= (hasLens ? 1080 : 900) + 100);
+            if (NearbyEnemy == null) return;
+            var MinHpTargetNearbyEnemy = NearbyEnemy.OrderBy(x => x.Health).FirstOrDefault();
+            if (MinHpTargetNearbyEnemy == null) return;
+
+            var killables = NearbyEnemy.Where(x => x.Health <= soulAssumption.Damage(x, hasLens));
+            if (killables == null) return;
+            var killableTarget = killables.FirstOrDefault();
+            if (soulAssumption.CanbeCastedOn(killableTarget, hasLens))
+            {
+                if (Utils.SleepCheck("soulassumption"))
+                {
+                    soulAssumption.Use(killableTarget);
+                    Utils.Sleep(100, "soulassumption");
+                }
+            }
         }
 
 

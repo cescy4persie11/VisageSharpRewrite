@@ -12,13 +12,6 @@ namespace VisageSharpRewrite.Features
 {
     public class Follow
     {
-        private List<Unit> familiars
-        {
-            get
-            {
-                return Variables.Familiars;
-            }
-        }
 
         private Hero me
         {
@@ -41,9 +34,9 @@ namespace VisageSharpRewrite.Features
 
         }
 
-        public void Execute()
+        public void Execute(List<Unit> familiars)
         {
-            if (!familiarControl.AnyFamiliarNearMe(familiars))
+            if (!familiarControl.AnyFamiliarNearMe(familiars, 500))
             {
                 if (Utils.SleepCheck("fmove"))
                 {
@@ -59,9 +52,9 @@ namespace VisageSharpRewrite.Features
             }
         }
 
-        public void PlayerExecution(ExecuteOrderEventArgs args)
+        public void PlayerExecution(ExecuteOrderEventArgs args, List<Unit> familiars)
         {
-            if (familiarControl.AnyFamiliarNearMe(familiars))
+            if (familiarControl.AnyFamiliarNearMe(familiars, 500))
             {
                 if (args.Order == Order.MoveLocation)
                 {

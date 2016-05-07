@@ -43,6 +43,7 @@ namespace VisageSharpRewrite.Abilities
 
         public bool CanbeCastedOn(Hero target, bool hasLens)
         {
+            if (target == null) return false;
             return Variables.Hero.Distance2D(target) <= this.ability.CastRange + (hasLens ? 200 : 0) + 100 
                     && !target.IsMagicImmune() && this.ability.CanBeCasted();
         }
@@ -57,9 +58,9 @@ namespace VisageSharpRewrite.Abilities
             double dmg = 0;
             if (target == null) return 0;
             if (this.ability == null) return 0;
-            var soulAssumption = Variables.Hero.Modifiers.Where(x => x.Name == "modifier_visage_soul_assumption");
+            var soulAssumption = Variables.Hero.Modifiers.Where(x => x.Name == "modifier_visage_soul_assumption").FirstOrDefault();
             if (soulAssumption == null) return 10;
-            var stackCount = soulAssumption.FirstOrDefault().StackCount;
+            var stackCount = soulAssumption.StackCount;
             var magicResist = target.MagicDamageResist;
             var magicDmg = 20 + stackCount * 110;
             var intAmp = Variables.Hero.Intelligence / 16 * 0.01;
