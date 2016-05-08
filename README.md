@@ -1,6 +1,4 @@
 # VisageSharpRewrite
-Full Credits to my reference to Moones Assembly 
-Breaker# & Ability# https://github.com/Moones/EnsageSharp for his top level code style
 
 **05/07/2016**
 - Added Combo Mode
