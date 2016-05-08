@@ -25,7 +25,7 @@ namespace VisageSharpRewrite.Utilities
             this.Menu = new Menu("VisageSharp", "VisageSharp", true, heroName, true);
             this.AutoFamiliarLastHitMenu = new MenuItem("Auto Familar Lasthit", "Auto Familar Lasthit").SetValue(new KeyBind('W', KeyBindType.Toggle));
             this.AutoSoulAssumpMenu = new MenuItem("AutoSoulAssump", "AutoSoulAssump").SetValue(new KeyBind('X', KeyBindType.Toggle, true)).SetTooltip("Max Damage Mode/KillSteal");
-            this.ComboMenu = new MenuItem("Combo", "Combo").SetValue(new KeyBind('D', KeyBindType.Toggle)).SetTooltip("Combo Mode");
+            this.ComboMenu = new MenuItem("Combo", "ComboMode").SetValue(new KeyBind('D', KeyBindType.Press)).SetTooltip("Combo Mode");
             this.FamiliarFollowMenu = new MenuItem("FamiliarFollow", "FamiliarFollow").SetValue(new KeyBind('E', KeyBindType.Toggle, true)).SetTooltip("let familiars follow you in position, but never auto-attack");
             this.Menu.AddItem(AutoFamiliarLastHitMenu);
             this.Menu.AddItem(AutoSoulAssumpMenu);

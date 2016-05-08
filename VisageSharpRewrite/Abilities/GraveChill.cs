@@ -8,6 +8,7 @@ using Ensage.Common;
 using Ensage.Common.Extensions;
 using Ensage.Common.Objects;
 using SharpDX;
+using Ensage.Common.Objects.UtilityObjects;
 
 namespace VisageSharpRewrite.Abilities
 {
@@ -40,9 +41,26 @@ namespace VisageSharpRewrite.Abilities
                     && Variables.Hero.Distance2D(target) <= this.ability.CastRange + (hasLens ? 200 : 0) + 100;
         }
 
+        public void SwitchTread()
+        {
+            if (Variables.PowerTreadsSwitcher != null && Variables.PowerTreadsSwitcher.IsValid
+                && Variables.Hero.Health > 300)
+            {
+                Variables.PowerTreadsSwitcher.SwitchTo(
+                    Ensage.Attribute.Intelligence,
+                    Variables.PowerTreadsSwitcher.PowerTreads.ActiveAttribute,
+                    false);
+            }
+        }
+
         public void UseOn(Hero target)
         {
-            this.ability.UseAbility(target);
+            if (Utils.SleepCheck("grave chill"))
+            {
+                SwitchTread();
+                this.ability.UseAbility(target);
+                Utils.Sleep(100, "grave chill");
+            }
         }
     }
 }

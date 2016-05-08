@@ -36,7 +36,7 @@ namespace VisageSharpRewrite.Features
 
         public void Execute(List<Unit> familiars)
         {
-            if (!familiarControl.AnyFamiliarNearMe(familiars, 500))
+            if (!familiarControl.AnyFamiliarNearMe(familiars, 200))
             {
                 if (Utils.SleepCheck("fmove"))
                 {
@@ -47,7 +47,7 @@ namespace VisageSharpRewrite.Features
                             f.Follow(me);
                         }
                     }
-                    Utils.Sleep(100, "fmove");
+                    Utils.Sleep(1000, "fmove");
                 }
             }
         }

@@ -74,7 +74,7 @@ namespace VisageSharpRewrite.Features
 
         public void DrawAutoLastHit(bool on)
         {
-            var startPos = new Vector2(Convert.ToSingle(Drawing.Width) - 130, Convert.ToSingle(Drawing.Height * 0.5));
+            var startPos = new Vector2(Convert.ToSingle(Drawing.Width) - 130, Convert.ToSingle(Drawing.Height * 0.54));
 
             this.text = "Last Hit" + "[" + Utils.KeyToText(Variables.MenuManager.AutoFamiliarLastHitMenu.GetValue<KeyBind>().Key) + "] " + (on ? "ON" : "OFF");
             this.Position = startPos;
@@ -86,20 +86,9 @@ namespace VisageSharpRewrite.Features
 
         public void DrawAutoNuke(bool on)
         {
-            var startPos = new Vector2(Convert.ToSingle(Drawing.Width) - 130, Convert.ToSingle(Drawing.Height * 0.54));
+            var startPos = new Vector2(Convert.ToSingle(Drawing.Width) - 130, Convert.ToSingle(Drawing.Height * 0.58));
 
             this.text = "AutoNuke" + "[" + Utils.KeyToText(Variables.MenuManager.AutoSoulAssumpMenu.GetValue<KeyBind>().Key) + "] " + (on ? "ON" : "OFF");
-            this.Position = startPos;
-            this.textSize = new Vector2(20);
-            this.Color = !on ? Color.Red : Color.Yellow;
-            this.FontFlags = FontFlags.AntiAlias | FontFlags.DropShadow | FontFlags.Additive | FontFlags.Custom | FontFlags.StrikeOut;
-            this.Draw();
-        }
-
-        public void DrawTextCombo(bool on)
-        {
-            var startPos = new Vector2(Convert.ToSingle(Drawing.Width) - 130, Convert.ToSingle(Drawing.Height * 0.58));
-            this.text = "Combo" + "[" + Utils.KeyToText(Variables.MenuManager.ComboMenu.GetValue<KeyBind>().Key) + "] " + (on ? "ON" : "OFF");
             this.Position = startPos;
             this.textSize = new Vector2(20);
             this.Color = !on ? Color.Red : Color.Yellow;
@@ -111,12 +100,25 @@ namespace VisageSharpRewrite.Features
         {
             var startPos = new Vector2(Convert.ToSingle(Drawing.Width) - 130, Convert.ToSingle(Drawing.Height * 0.62));
 
-            this.text = "Follow" + "[" + Utils.KeyToText(Variables.MenuManager.FamiliarFollowMenu.GetValue<KeyBind>().Key) + "] ";
+            this.text = "Follow" + "[" + Utils.KeyToText(Variables.MenuManager.FamiliarFollowMenu.GetValue<KeyBind>().Key) + "] " + (on ? "ON" : "OFF");
             this.Position = startPos;
             this.textSize = new Vector2(20);
             this.Color = !on ? Color.Red : Color.Yellow;
             this.FontFlags = FontFlags.AntiAlias | FontFlags.DropShadow | FontFlags.Additive | FontFlags.Custom | FontFlags.StrikeOut;
             this.Draw();
         }
+
+        public void DrawTextCombo(bool on)
+        {
+            var startPos = new Vector2(Convert.ToSingle(Drawing.Width) - 130, Convert.ToSingle(Drawing.Height * 0.66));
+            this.text = "Combo" + "[" + Utils.KeyToText(Variables.MenuManager.ComboMenu.GetValue<KeyBind>().Key) + "] " + (on ? "ON" : "OFF");
+            this.Position = startPos;
+            this.textSize = new Vector2(20);
+            this.Color = !on ? Color.Red : Color.Yellow;
+            this.FontFlags = FontFlags.AntiAlias | FontFlags.DropShadow | FontFlags.Additive | FontFlags.Custom | FontFlags.StrikeOut;
+            this.Draw();
+        }
+
+        
     }
 }

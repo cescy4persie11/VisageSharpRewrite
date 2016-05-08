@@ -92,6 +92,7 @@
     <Compile Include="Features\DrawText.cs" />
     <Compile Include="Features\FamiliarAutoLast.cs" />
     <Compile Include="Features\Follow.cs" />
+    <Compile Include="Features\ItemUsage.cs" />
     <Compile Include="PowerTreadsSwitcher.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

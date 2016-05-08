@@ -9,6 +9,7 @@ using VisageSharpRewrite.Utilities;
 using VisageSharpRewrite.Abilities;
 using Ensage.Common;
 using Ensage.Common.Extensions;
+using Ensage.Common.Menu;
 
 namespace VisageSharpRewrite
 {
@@ -45,6 +46,14 @@ namespace VisageSharpRewrite
 
         private Combo combo;
 
+        private bool FollowHasLock;
+
+        private bool LashitHasLock;
+
+        private bool ComboHasLock;
+
+        private bool NukeLock;
+
         private Hero Target
         {
             get
@@ -69,6 +78,15 @@ namespace VisageSharpRewrite
             drawText.DrawAutoNuke(Variables.AutoSoulAumptionOn);
             drawText.DrawTextCombo(Variables.ComboOn);
             drawText.DrawFollow(Variables.FollowMode);
+            if (!Variables.ComboOn)
+            {
+                combo.DisableParticleEffect();
+                return;                
+            }
+            if (this.Target == null) return;
+            combo.DrawTarget(Target);
+            combo.DrawParticleEffect(Target);          
+            this.targetFind.DrawTarget();
 
         }
 
@@ -97,25 +115,20 @@ namespace VisageSharpRewrite
 
         public void OnUpdate_AutoLastHit()
         {
-            if (!this.pause)
-            {
-                this.pause = Game.IsPaused;
-            }
-            Variables.Familiars = ObjectManager.GetEntities<Unit>().Where(unit => unit.ClassID.Equals(ClassID.CDOTA_Unit_VisageFamiliar)).ToList();
-            if (Familiars == null) return;
-            if (this.pause || Me == null || !Familiars.Any(x => x != null) || !Familiars.Any(x => x.IsAlive) || !Familiars.Any(x => x.IsValid))
+            if(Variables.Hero == null || !Variables.Hero.IsValid || this.pause)
             {
                 this.pause = Game.IsPaused;
                 return;
             }
-
+            if (!Variables.InAutoLasthiMode) return;
+            if (!Variables.Familiars.Any(x => x != null) || !Variables.Familiars.Any(x => x.IsAlive) || !Variables.Familiars.Any(x => x.IsValid))
+            {
+                return;
+            }            
+            if (Familiars == null) return;        
             if (Utils.SleepCheck("autolasthit"))
             {
-                if (Variables.InAutoLasthiMode)
-                {
-
-                    familiarAutoLastHit.Execute(Familiars);
-                }
+                familiarAutoLastHit.Execute(Familiars);             
                 Utils.Sleep(100, "autolasthit");
             }
         }
@@ -143,9 +156,14 @@ namespace VisageSharpRewrite
             {
                 return;
             }
+            Variables.Familiars = ObjectManager.GetEntities<Unit>().Where(unit => unit.ClassID.Equals(ClassID.CDOTA_Unit_VisageFamiliar) && unit.IsAlive && unit.Team == Me.Team).ToList();
             if (Variables.FollowMode)
             {
-                follow.Execute(Familiars);
+                if (Utils.SleepCheck("follow"))
+                {
+                    follow.Execute(Familiars);
+                    Utils.Sleep(1000, "follow");
+                }
             }
         }
 
@@ -158,19 +176,95 @@ namespace VisageSharpRewrite
             {
                 return;
             }
-            this.targetFind.Find();
-            if (Variables.ComboOn && Target != null)
+            if (!Variables.ComboOn)
             {
-                combo.Execute(Me, Target, Familiars);
+                this.targetFind.UnlockTarget();
+            }    
+            Variables.Familiars = ObjectManager.GetEntities<Unit>().Where(unit => unit.ClassID.Equals(ClassID.CDOTA_Unit_VisageFamiliar) && unit.IsAlive && unit.Team == Me.Team).ToList();
+            if (Variables.ComboOn)
+            {                
+                combo.Execute(Me, Target, Familiars);       
             }
+
+           
+
         }
 
-        public void OnUpdate()
+        public void OnUpdate_MenuControl()
         {
-            if (this.pause || ((Me == null && Familiars == null) || (!Me.IsAlive && !Familiars.Any(x => x.IsAlive))))
+            if (this.pause || Variables.Hero == null || !Variables.Hero.IsValid || !Variables.Hero.IsAlive)
             {
                 return;
             }
+            this.targetFind.Find();
+            Variables.Familiars = ObjectManager.GetEntities<Unit>().Where(unit => unit.ClassID.Equals(ClassID.CDOTA_Unit_VisageFamiliar)).ToList();
+            //lasthit mode will disable follow mode
+            if (LashitHasLock)
+            {
+                if (Variables.InAutoLasthiMode)
+                {
+                    if (Variables.FollowMode)
+                    {
+                        Variables.MenuManager.FamiliarFollowMenu.SetValue(new KeyBind(Variables.MenuManager.FamiliarFollowMenu.GetValue<KeyBind>().Key, KeyBindType.Toggle, false));
+                    }
+                }
+                LashitHasLock = false;
+            }
+
+            //follow mode with disable lasthit mode
+            if (Variables.FollowMode)
+            {
+                if (Variables.InAutoLasthiMode)
+                {
+                    Variables.MenuManager.AutoFamiliarLastHitMenu.SetValue(new KeyBind(Variables.MenuManager.AutoFamiliarLastHitMenu.GetValue<KeyBind>().Key, KeyBindType.Toggle, false));
+                }
+                LashitHasLock = true;
+            }
+
+            //disable autonuke in Combo mode and return back with AutoNuke on
+            if (NukeLock)
+            {
+                if (!Variables.AutoSoulAumptionOn)
+                {
+                    Variables.MenuManager.AutoSoulAssumpMenu.SetValue(new KeyBind(Variables.MenuManager.AutoSoulAssumpMenu.GetValue<KeyBind>().Key, KeyBindType.Toggle, true));
+                    
+                }
+                NukeLock = false;
+            }
+
+            if (Variables.ComboOn)
+            {
+                //disable familiar auto last hit
+                //disable follow mode
+                if (Variables.AutoSoulAumptionOn)
+                {
+                    Variables.MenuManager.AutoSoulAssumpMenu.SetValue(new KeyBind(Variables.MenuManager.AutoSoulAssumpMenu.GetValue<KeyBind>().Key, KeyBindType.Toggle, false));
+                }
+                if (Variables.InAutoLasthiMode && Variables.familiarControl.AnyFamiliarNearMe(Familiars, 2000))
+                {
+                    Variables.MenuManager.AutoFamiliarLastHitMenu.SetValue(new KeyBind(Variables.MenuManager.AutoFamiliarLastHitMenu.GetValue<KeyBind>().Key, KeyBindType.Toggle, false));
+                }
+                if (Variables.FollowMode)
+                {
+                    Variables.MenuManager.FamiliarFollowMenu.SetValue(new KeyBind(Variables.MenuManager.FamiliarFollowMenu.GetValue<KeyBind>().Key, KeyBindType.Toggle, false));
+                }
+                FollowHasLock = true;
+                NukeLock = true;
+            }
+            else
+            {
+                if (FollowHasLock) // Follow has lock to return to Follow Mode from Combo
+                {
+                    if (!Variables.InAutoLasthiMode && !Variables.FollowMode && !Variables.ComboOn && Variables.familiarControl.AnyFamiliarNearMe(Familiars, 1500))
+                    {
+                        //auto switch to follow mode
+                        Variables.MenuManager.FamiliarFollowMenu.SetValue(new KeyBind(Variables.MenuManager.FamiliarFollowMenu.GetValue<KeyBind>().Key, KeyBindType.Toggle, true));
+                    }
+                    //release lock;
+                    FollowHasLock = false; 
+                }
+            }
+
         }
 
 
@@ -189,25 +283,34 @@ namespace VisageSharpRewrite
             */
         }
 
-        public void Player_OnExecuteOrder(ExecuteOrderEventArgs args)
+        public void Player_OnExecuteOrder(Player sender, ExecuteOrderEventArgs args)
         {
 
             if (this.pause || Variables.Hero == null || !Variables.Hero.IsValid || !Variables.Hero.IsAlive || Familiars == null)
             {
                 return;
             }
+            //unlock target
+            this.targetFind.UnlockTarget();
             if (!Variables.InAutoLasthiMode)
             {
                 //reset autoattack mode
                 familiarAutoLastHit.PlayerExecution();
             }
             //refinements on follow mode, familiar will duplicate Hero movement if familiars are next the heros, instead of simply following.
-            if (Variables.FollowMode)
+            if (sender.Equals(ObjectManager.LocalPlayer))
             {
-                follow.PlayerExecution(args, Familiars);
+                if (Variables.FollowMode)
+                {
+                    follow.PlayerExecution(args, Familiars);
+                }
+            }              
+            
+            //diable particile effect
+            if (Variables.ComboOn)
+            {
+                combo.PlayerExecution(Target);
             }
-            //unlock target
-            this.targetFind.UnlockTarget();
         }
 
         public void OnClose()
@@ -219,6 +322,8 @@ namespace VisageSharpRewrite
             }
 
             Variables.PowerTreadsSwitcher = null;
+            Variables.familiarControl = null;
+            Variables.Familiars = null;
         }
 
 

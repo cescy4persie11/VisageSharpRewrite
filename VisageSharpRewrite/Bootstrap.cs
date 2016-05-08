@@ -39,7 +39,7 @@ namespace VisageSharpRewrite
 
         private void Events_OnClose(object sender, EventArgs e)
         {
-            //this.visageSharp.OnClose();
+            this.visageSharp.OnClose();
         }
 
         private void Game_OnUpdate(EventArgs args)
@@ -47,7 +47,7 @@ namespace VisageSharpRewrite
             this.visageSharp.OnUpdate_AutoLastHit();
             this.visageSharp.OnUpdate_AutoNuke();
             this.visageSharp.OnUpdate_Follow();
-            //this.visageSharp.OnUpdate();
+            this.visageSharp.OnUpdate_MenuControl();
             this.visageSharp.OnUpdate_Combo();
         }
 
@@ -60,7 +60,7 @@ namespace VisageSharpRewrite
         {
             if (sender.Equals(ObjectManager.LocalPlayer))
             {
-                this.visageSharp.Player_OnExecuteOrder(args);
+                this.visageSharp.Player_OnExecuteOrder(sender, args);
             }
         }
     }

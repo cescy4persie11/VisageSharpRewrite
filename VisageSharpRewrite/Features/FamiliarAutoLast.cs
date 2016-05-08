@@ -22,6 +22,8 @@ namespace VisageSharpRewrite.Features
 
         public int autoAttackMode { get; set; }
 
+        private bool looked;
+
         private FamiliarControl familiarControl
         {
             get
@@ -60,7 +62,7 @@ namespace VisageSharpRewrite.Features
             {
                 foreach (var f in familiars)
                 {
-                    if (Variables.familiarControl.FaimiliarHasToStone(f))
+                    if (Variables.familiarControl.FamiliarHasToStone(f))
                     {
                         Variables.familiarControl.UseStone(f);
                     }
@@ -71,6 +73,22 @@ namespace VisageSharpRewrite.Features
             if (familiarControl.AnyEnemyNearFamiliar(familiars, 600))
             {
                 familiarControl.RetreatToTowerOrFountain(familiars);
+                var AnyEnemyNearMe = ObjectManager.GetEntities<Hero>().Any(x => x.IsAlive && x.Team != Variables.Hero.Team
+                                                        && x.Distance2D(Variables.Hero) <= 1000);
+                if (!Variables.ComboOn && !AnyEnemyNearMe)
+                {
+                    Game.ExecuteCommand("dota_camera_set_lookatpos " + familiars.FirstOrDefault().Position.X + " " + familiars.FirstOrDefault().Position.Y);
+                    looked = true;
+                }
+                
+                if (looked)
+                {
+                    DelayAction.Add(1500, () =>
+                    {
+                        Game.ExecuteCommand("dota_camera_set_lookatpos " + Variables.Hero.Position.X + " " + Variables.Hero.Position.Y);
+                    });
+                    looked = false;
+                }
                 //disable auto last hit
                 Variables.MenuManager.AutoFamiliarLastHitMenu.SetValue(new KeyBind(Variables.MenuManager.AutoFamiliarLastHitMenu.GetValue<KeyBind>().Key, KeyBindType.Toggle, false));
                 return;

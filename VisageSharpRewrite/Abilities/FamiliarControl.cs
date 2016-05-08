@@ -18,7 +18,7 @@ namespace VisageSharpRewrite.Abilities
 
         }
 
-        public bool FaimiliarHasToStone(Unit f)
+        public bool FamiliarHasToStone(Unit f)
         {
             return f.Spellbook.SpellQ.CanBeCasted() && (f.BonusDamage < 20 || f.Health <= 3)
                     // exclude a situation where familiars are in the summon phase
@@ -27,9 +27,14 @@ namespace VisageSharpRewrite.Abilities
 
         public bool FamiliarCanStoneEnemies(Hero target, Unit f)
         {
-            return f.Spellbook.SpellQ.CanBeCasted() && (f.BonusDamage < 20 || f.Health <= 3) && f.Distance2D(target) <= 100
+            return f.Spellbook.SpellQ.CanBeCasted() && (f.BonusDamage < 20) && f.Distance2D(target) <= 100
                 // exclude a situation where familiars are in the summon phase
                 && Variables.Hero.Spellbook.Spell4.Cooldown <= 200 - Variables.Hero.Spellbook.Spell4.Level * 20 - 5; 
+        }
+
+        public bool NotMuchDmgLeft(Unit f)
+        {
+            return f.BonusDamage < 20 && f.Spellbook.SpellQ.CanBeCasted();
         }
 
         public void UseStone(Unit f)
@@ -45,8 +50,8 @@ namespace VisageSharpRewrite.Abilities
 
         public bool AnyFamiliarNearMe(List<Unit> familiars, int range)
         {
-            return familiars.Any(x => x.IsAlive && x.IsAlive && x.Team == Variables.Hero.Team
-                                && x.Distance2D(Variables.Hero) <= range && x.IsControllable);
+            return familiars.Any(x => x.IsAlive && x.Team == Variables.Hero.Team
+                                && x.Distance2D(Variables.Hero) <= range);
         }
 
         public bool AnyEnemyNearFamiliar(List<Unit> familiars, int range)
@@ -78,6 +83,7 @@ namespace VisageSharpRewrite.Abilities
             if (familiars == null) return;
             var ClosestAllyTower = ObjectManager.GetEntities<Unit>().Where(x => x.ClassID == ClassID.CDOTA_BaseNPC_Tower
                                                                                         && x.Team == Variables.Hero.Team
+                                                                                        && x.Distance2D(familiars.FirstOrDefault()) > 100
                                                                                         ).OrderBy(y => y.Distance2D(familiars.FirstOrDefault()))
                                                                                        .FirstOrDefault();
             if(ClosestAllyTower == null)

@@ -15,7 +15,7 @@ namespace VisageSharpRewrite.Abilities
     {
         private readonly Ability ability;
 
-        private readonly DotaTexture abilityIcon;
+        //private readonly DotaTexture abilityIcon;
 
         private uint level
         {
@@ -34,9 +34,9 @@ namespace VisageSharpRewrite.Abilities
             this.iconSize = new Vector2(HUDInfo.GetHpBarSizeY() * 2);
         }
 
-        public bool HasMaxCharges()
+        public bool HasMaxCharges(Hero me)
         {
-            var soulAssumption = Variables.Hero.Modifiers.Where(x => x.Name == "modifier_visage_soul_assumption").FirstOrDefault();
+            var soulAssumption = me.Modifiers.Where(x => x.Name == "modifier_visage_soul_assumption").FirstOrDefault();
             if (soulAssumption == null) return false;
             return soulAssumption.StackCount == 2 + level;
         }
@@ -70,9 +70,25 @@ namespace VisageSharpRewrite.Abilities
 
         public void Use(Hero target)
         {
-            this.ability.UseAbility(target);
+            if (Utils.SleepCheck("soul assumption"))
+            {
+                SwitchTread();
+                this.ability.UseAbility(target);
+                Utils.Sleep(100, "soul assumption");
+            }
         }
 
+        public void SwitchTread()
+        {
+            if (Variables.PowerTreadsSwitcher != null && Variables.PowerTreadsSwitcher.IsValid
+                && Variables.Hero.Health > 300)
+            {
+                Variables.PowerTreadsSwitcher.SwitchTo(
+                    Ensage.Attribute.Intelligence,
+                    Variables.PowerTreadsSwitcher.PowerTreads.ActiveAttribute,
+                    false);
+            }
+        }
 
     }
 }

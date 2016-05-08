@@ -41,22 +41,22 @@ namespace VisageSharpRewrite.Features
             
             var killables = NearbyEnemy.Where(x => x.Health <= soulAssumption.Damage(x, hasLens));
             
-            if (killables== null)
+            if (killables.Count() == 0)
             {
                 var SoulAssumpCharges = me.Modifiers.Where(x => x.Name == "modifier_visage_soul_assumption").FirstOrDefault();
                 if (SoulAssumpCharges == null) return;
-                if(soulAssumption.HasMaxCharges() && soulAssumption.CanbeCastedOn(MinHpTargetNearbyEnemy, hasLens))
+                if(soulAssumption.HasMaxCharges(me) && soulAssumption.CanbeCastedOn(MinHpTargetNearbyEnemy, hasLens))
                 {
                     if (Utils.SleepCheck("soulassumption"))
                     {
                         soulAssumption.Use(MinHpTargetNearbyEnemy);
-                        Utils.Sleep(100, "soulassumption");
+                        Utils.Sleep(200, "soulassumption");
                     }
                 }
             }
             else
             {
-                var killableTarget = killables.FirstOrDefault();
+                var killableTarget = killables.FirstOrDefault();               
                 if (soulAssumption.CanbeCastedOn(killableTarget, hasLens))
                 {
                     if (Utils.SleepCheck("soulassumption"))
@@ -80,14 +80,14 @@ namespace VisageSharpRewrite.Features
             if (MinHpTargetNearbyEnemy == null) return;
 
             var killables = NearbyEnemy.Where(x => x.Health <= soulAssumption.Damage(x, hasLens));
-            if (killables == null) return;
+            if (killables.Count() == 0) return;
             var killableTarget = killables.FirstOrDefault();
             if (soulAssumption.CanbeCastedOn(killableTarget, hasLens))
             {
                 if (Utils.SleepCheck("soulassumption"))
                 {
                     soulAssumption.Use(killableTarget);
-                    Utils.Sleep(100, "soulassumption");
+                    Utils.Sleep(200, "soulassumption");
                 }
             }
         }
