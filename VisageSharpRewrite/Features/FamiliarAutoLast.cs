@@ -57,17 +57,20 @@ namespace VisageSharpRewrite.Features
                 
             this.setAutoAttackMode();
             if (familiars == null) return;
+            
             //Auto Stone if under low attack dmg or health being low  
-            if (Utils.SleepCheck("stone"))
+            foreach (var f in familiars)
             {
-                foreach (var f in familiars)
+                if (Variables.familiarControl.FamiliarHasToStone(f))
                 {
-                    if (Variables.familiarControl.FamiliarHasToStone(f))
+                    if (Utils.SleepCheck("stone"))
                     {
+
                         Variables.familiarControl.UseStone(f);
+                        Utils.Sleep(100, "stone");
                     }
                 }
-                Utils.Sleep(500, "stone");
+
             }
 
             if (familiarControl.AnyEnemyNearFamiliar(familiars, 600))
@@ -97,51 +100,63 @@ namespace VisageSharpRewrite.Features
 
             //Console.WriteLine("familiar pos " + familiar.FirstOrDefault().Position);
             // If there is enemy nearby
-            var AnyoneAttackingMe = ObjectManager.TrackingProjectiles.Any(x => x.Target.Name.Equals(familiars.FirstOrDefault().Name));
+            var AnyoneAttackingMe = ObjectManager.TrackingProjectiles.Any(x => x.Target.Name.Equals("npc_dota_visage_familiar1") || x.Target.Name.Equals("npc_dota_visage_familiar2") || x.Target.Name.Equals("npc_dota_visage_familiar3"));
+            //Console.WriteLine("anyone attacking me " + AnyoneAttackingMe);
+            foreach (var f in familiars) {
+                Console.WriteLine(f.Name);
+            }
             //if no ally creeps nearby, go follow the nearst ally creeps
-
+            var closestAllyCreep = ObjectManager.GetEntities<Unit>().Where(_x =>
+                                                                          _x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
+                                                                          && _x.IsAlive && _x.Team == me.Team && _x.IsMoving
+                                                                          && (_x.Name.Equals("npc_dota_creep_badguys_melee")) || _x.Name.Equals("npc_dota_creep_goodguys_melee")).
+                                                                          OrderBy(x => familiars.Sum(y => x.Distance2D(y)))
+                                                                          .FirstOrDefault();
             if (!familiarControl.AnyAllyCreepsAroundFamiliar(familiars))
             {
-                var closestAllyCreep = ObjectManager.GetEntities<Unit>().Where(_x =>
-                                                                          _x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
-                                                                          && _x.IsAlive
-                                                                          && _x.Name.Equals("npc_dota_creep_badguys_melee")).
-                                                                          OrderBy(x => x.Distance2D(familiars.FirstOrDefault())).FirstOrDefault();
+                //Console.WriteLine("cloest ally creeps " + closestAllyCreep.Name);
                 if (closestAllyCreep == null) return;
+                //Console.WriteLine("familiars have to move");
                 if (Utils.SleepCheck("move"))
                 {
                     foreach (var f in familiars)
                     {
-                        if (f.CanMove())
-                        {
-                            f.Follow(closestAllyCreep);
-                        }
+                        f.Follow(closestAllyCreep);
+                        //Console.WriteLine("f position " + f.Position);
+                        //Console.WriteLine("cloest Ally creep is " + closestAllyCreep.Position);
                     }
+                    
                     Utils.Sleep(100, "move");
                 }
+                
+                return;
             }
-            else
-            {
+            //else
+            //{
                 if (AnyoneAttackingMe)
                 {
                     //go the the cloestallycreeps
-                    var closestAllyCreep = ObjectManager.GetEntities<Unit>().Where(_x =>
-                                                                          _x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
-                                                                          && _x.IsAlive
-                                                                          && _x.Name.Equals("npc_dota_creep_badguys_melee")).
-                                                                          OrderBy(x => x.Distance2D(familiars.FirstOrDefault())).FirstOrDefault();
+                    //var closestAllyCreep = ObjectManager.GetEntities<Unit>().Where(_x =>
+                    //                                                     _x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
+                    //                                                     && _x.IsAlive && _x.Team == me.Team
+                    //                                                     && _x.Name.Equals("npc_dota_creep_goodguys_ranged"))
+                    //                                                     .
+                    //                                                     OrderBy(x => x.Distance2D(familiars.FirstOrDefault())
+                    //                                                    ).FirstOrDefault();
+                    //Console.WriteLine("cloest allu creeps " + closestAllyCreep.Name);
                     if (closestAllyCreep == null) return;
-                    foreach (var f in familiars)
+                    if (Utils.SleepCheck("move"))
                     {
-                        if (f.CanMove())
+                        foreach (var f in familiars)
                         {
-                            f.Move(closestAllyCreep.Position);
+                            f.Follow(me);
                         }
+                        Utils.Sleep(100, "move");
                     }
-                    Utils.Sleep(100, "move");
+                return;
                 }
-                else
-                {
+                //else
+                //{
                     // has enemy creeps around
                     //AutoLastHit Mode
                     getLowestHpCreep(familiars.FirstOrDefault(), 1000);
@@ -243,8 +258,8 @@ namespace VisageSharpRewrite.Features
                             }
                         }
                     }
-                }
-            }
+                //}
+            //}
             
 
 
@@ -328,7 +343,8 @@ namespace VisageSharpRewrite.Features
                                                                                     && _x.Team != me.Team
                                                                                     && _x.IsAlive
                                                                                     && _x.GetTurnTime(me) == 0)
-                                                                                    && _x.Name.Equals("npc_dota_creep_badguys_melee"));
+                                                                                    && (_x.Name.Equals("npc_dota_creep_badguys_melee")
+                                                                                    || (_x.Name.Equals("npc_dota_creep_goodguys_melee"))));
                 if (allMeleeCreepsAttackingMe == null) return num;
                 num = allMeleeCreepsAttackingMe.Count();
             }
@@ -352,7 +368,8 @@ namespace VisageSharpRewrite.Features
                                                                                     && _x.Team != me.Team
                                                                                     && _x.IsAlive
                                                                                     && _x.GetTurnTime(me) == 0)
-                                                                                    && _x.Name.Equals("npc_dota_creep_badguys_ranged"));
+                                                                                    && (_x.Name.Equals("npc_dota_creep_badguys_ranged")
+                                                                                        || _x.Name.Equals("npc_dota_creep_goodguys_ranged")));
                 if (allRangedCreepsAttackingMe == null) return num;
                 num = allRangedCreepsAttackingMe.Count();
             }

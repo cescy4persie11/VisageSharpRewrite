@@ -67,15 +67,21 @@ namespace VisageSharpRewrite.Abilities
                                                                _x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Siege)
                                                                && familiars.Any(y => y.Distance2D(_x) <= 500)
                                                               && _x.Team != Variables.Hero.Team
+                                                              && _x.IsAlive
                                                               ));
         }
 
         public bool AnyAllyCreepsAroundFamiliar(List<Unit> familiars)
         {
+            //dire bad guy, radiance good guys
+            Console.WriteLine("cond " + ObjectManager.GetEntities<Unit>().Any(_x => _x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
+                                                                && _x.IsAlive && _x.Team == Variables.Hero.Team
+                                                                 && familiars.Any<Unit>(_y => _y.Distance2D(_x) < 300)));
             return ObjectManager.GetEntities<Unit>().Any(_x => _x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
-                                                                && _x.IsAlive
-                                                                && (_x.Name.Equals("npc_dota_creep_badguys_melee") || _x.Name.Equals("npc_dota_creep_badguys_ranged"))
-                                                                && familiars.Any<Unit>(_y => _y.Distance2D(_x) < 300));
+                                                                && _x.IsAlive && _x.Team == Variables.Hero.Team
+                                                                //&& ((_x.Name.Equals("npc_dota_creep_badguys_melee") || _x.Name.Equals("npc_dota_creep_badguys_ranged"))
+                                                                // || (_x.Name.Equals("npc_dota_creep_goodguys_melee") || _x.Name.Equals("npc_dota_creep_goodguys_ranged")))
+                                                                 && familiars.Any<Unit>(_y => _y.Distance2D(_x) < 200));
         }
 
         public void RetreatToTowerOrFountain(List<Unit> familiars)

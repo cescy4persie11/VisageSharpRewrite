@@ -70,7 +70,7 @@ namespace VisageSharpRewrite
 
         public void OnDraw()
         {
-            if (Variables.Hero == null || !Variables.Hero.IsValid || !Variables.Hero.IsAlive)
+            if (this.pause || Variables.Hero == null || !Variables.Hero.IsValid || !Variables.Hero.IsAlive)
             {
                 return;
             }
@@ -96,7 +96,7 @@ namespace VisageSharpRewrite
             this.pause = Variables.Hero.ClassID != ClassID.CDOTA_Unit_Hero_Visage;
             if (this.pause) return;
             Variables.MenuManager = new MenuManager(Me.Name);
-            Variables.Familiars = ObjectManager.GetEntities<Unit>().Where(unit => unit.ClassID.Equals(ClassID.CDOTA_Unit_VisageFamiliar)).ToList();
+            Variables.Familiars = ObjectManager.GetEntities<Unit>().Where(unit => unit.ClassID.Equals(ClassID.CDOTA_Unit_VisageFamiliar) && unit.IsAlive).ToList();
             Variables.graveChill = new GraveChill(Me.Spellbook.Spell1);
             Variables.soulAssumption = new SoulAssumption(Me.Spellbook.Spell2);
             Variables.familiarControl = new FamiliarControl();
@@ -115,22 +115,25 @@ namespace VisageSharpRewrite
 
         public void OnUpdate_AutoLastHit()
         {
-            if(Variables.Hero == null || !Variables.Hero.IsValid || this.pause)
+            if (Game.IsPaused)
             {
                 this.pause = Game.IsPaused;
+                return;
+            }
+            
+            if (this.pause || Variables.Hero == null || !Variables.Hero.IsValid || !Variables.Hero.IsAlive)
+            {
                 return;
             }
             if (!Variables.InAutoLasthiMode) return;
             if (!Variables.Familiars.Any(x => x != null) || !Variables.Familiars.Any(x => x.IsAlive) || !Variables.Familiars.Any(x => x.IsValid))
             {
                 return;
-            }            
-            if (Familiars == null) return;        
-            if (Utils.SleepCheck("autolasthit"))
-            {
-                familiarAutoLastHit.Execute(Familiars);             
-                Utils.Sleep(100, "autolasthit");
             }
+            Variables.Familiars = ObjectManager.GetEntities<Unit>().Where(unit => unit.ClassID.Equals(ClassID.CDOTA_Unit_VisageFamiliar) && unit.IsAlive).ToList();
+
+            if (Familiars == null) return;
+            familiarAutoLastHit.Execute(Familiars);             
         }
 
         public void OnUpdate_AutoNuke()
@@ -199,6 +202,8 @@ namespace VisageSharpRewrite
             this.targetFind.Find();
             Variables.Familiars = ObjectManager.GetEntities<Unit>().Where(unit => unit.ClassID.Equals(ClassID.CDOTA_Unit_VisageFamiliar)).ToList();
             //lasthit mode will disable follow mode
+
+            
             if (LashitHasLock)
             {
                 if (Variables.InAutoLasthiMode)
@@ -258,7 +263,7 @@ namespace VisageSharpRewrite
                     if (!Variables.InAutoLasthiMode && !Variables.FollowMode && !Variables.ComboOn && Variables.familiarControl.AnyFamiliarNearMe(Familiars, 1500))
                     {
                         //auto switch to follow mode
-                        Variables.MenuManager.FamiliarFollowMenu.SetValue(new KeyBind(Variables.MenuManager.FamiliarFollowMenu.GetValue<KeyBind>().Key, KeyBindType.Toggle, true));
+                        //Variables.MenuManager.FamiliarFollowMenu.SetValue(new KeyBind(Variables.MenuManager.FamiliarFollowMenu.GetValue<KeyBind>().Key, KeyBindType.Toggle, true));
                     }
                     //release lock;
                     FollowHasLock = false; 
