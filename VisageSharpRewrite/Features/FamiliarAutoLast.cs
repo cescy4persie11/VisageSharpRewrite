@@ -112,28 +112,38 @@ namespace VisageSharpRewrite.Features
                                                                           && (_x.Name.Equals("npc_dota_creep_badguys_melee")) || _x.Name.Equals("npc_dota_creep_goodguys_melee")).
                                                                           OrderBy(x => familiars.Sum(y => x.Distance2D(y)))
                                                                           .FirstOrDefault();
-            if (!familiarControl.AnyAllyCreepsAroundFamiliar(familiars))
+            if (Utils.SleepCheck("move"))
             {
-                //Console.WriteLine("cloest ally creeps " + closestAllyCreep.Name);
-                if (closestAllyCreep == null) return;
-                //Console.WriteLine("familiars have to move");
-                if (Utils.SleepCheck("move"))
+                if (!familiarControl.AnyAllyCreepsAroundFamiliar(familiars))
                 {
-                    foreach (var f in familiars)
+                    //Console.WriteLine("cloest ally creeps " + closestAllyCreep.Name);
+                    if (closestAllyCreep == null)
                     {
-                        f.Follow(closestAllyCreep);
-                        //Console.WriteLine("f position " + f.Position);
-                        //Console.WriteLine("cloest Ally creep is " + closestAllyCreep.Position);
+                        foreach (var f in familiars)
+                        {
+                            f.Follow(me);
+                            //Console.WriteLine("f position " + f.Position);
+                            Console.WriteLine("cloest Ally creep is " + closestAllyCreep.Position);
+                        }
                     }
-                    
+                    else {
+                        //Console.WriteLine("familiars have to move");
+                        foreach (var f in familiars)
+                        {
+                            f.Follow(closestAllyCreep);
+                            //Console.WriteLine("f position " + f.Position);
+                            Console.WriteLine("cloest Ally creep is " + closestAllyCreep.Position);
+                        }
+                    }
                     Utils.Sleep(100, "move");
+                    return;
                 }
-                
-                return;
             }
+
+
             //else
             //{
-                if (AnyoneAttackingMe)
+            if (AnyoneAttackingMe)
                 {
                     //go the the cloestallycreeps
                     //var closestAllyCreep = ObjectManager.GetEntities<Unit>().Where(_x =>
@@ -155,11 +165,12 @@ namespace VisageSharpRewrite.Features
                     }
                 return;
                 }
-                //else
-                //{
-                    // has enemy creeps around
-                    //AutoLastHit Mode
-                    getLowestHpCreep(familiars.FirstOrDefault(), 1000);
+            //else
+            //{
+            if (familiarControl.AnyAllyCreepsAroundFamiliar(familiars)) { 
+                // has enemy creeps around
+                //AutoLastHit Mode
+                getLowestHpCreep(familiars.FirstOrDefault(), 1000);
                     if (this._LowestHpCreep == null) return;
                     getKillableCreep(familiars.FirstOrDefault(), this._LowestHpCreep);
                     if (this._creepTarget == null) return;
@@ -258,7 +269,7 @@ namespace VisageSharpRewrite.Features
                             }
                         }
                     }
-                //}
+                }
             //}
             
 

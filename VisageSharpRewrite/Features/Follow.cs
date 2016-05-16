@@ -36,7 +36,8 @@ namespace VisageSharpRewrite.Features
 
         public void Execute(List<Unit> familiars)
         {
-            if (!familiarControl.AnyFamiliarNearMe(familiars, 200))
+            
+            if (!familiarControl.AnyFamiliarNearMe(familiars, 1000))
             {
                 if (Utils.SleepCheck("fmove"))
                 {
@@ -50,11 +51,13 @@ namespace VisageSharpRewrite.Features
                     Utils.Sleep(1000, "fmove");
                 }
             }
+            
         }
 
         public void PlayerExecution(ExecuteOrderEventArgs args, List<Unit> familiars)
         {
-            if (familiarControl.AnyFamiliarNearMe(familiars, 500))
+            /*
+            if (familiarControl.AnyFamiliarNearMe(familiars, 1000))
             {
                 if (args.Order == Order.MoveLocation)
                 {
@@ -67,6 +70,7 @@ namespace VisageSharpRewrite.Features
                     }
                 }
             }
+            */
         }
 
 

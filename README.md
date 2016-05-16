@@ -1,5 +1,9 @@
 # VisageSharpRewrite
 
+**05/16/2016**
+- Fixed bugs in LastHit Mode in Randiant
+- Fixed Follow Mode On will always override players micros.
+
 **05/07/2016**
 - Added Combo Mode
 - In Combo Mode, Familiars will go to predicted position for landing if they dont have much damage left (which means they will land more optimally)

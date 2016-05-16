@@ -117,7 +117,7 @@ namespace VisageSharpRewrite
         {
             if (Game.IsPaused)
             {
-                this.pause = Game.IsPaused;
+                //this.pause = Game.IsPaused;
                 return;
             }
             
@@ -263,7 +263,7 @@ namespace VisageSharpRewrite
                     if (!Variables.InAutoLasthiMode && !Variables.FollowMode && !Variables.ComboOn && Variables.familiarControl.AnyFamiliarNearMe(Familiars, 1500))
                     {
                         //auto switch to follow mode
-                        //Variables.MenuManager.FamiliarFollowMenu.SetValue(new KeyBind(Variables.MenuManager.FamiliarFollowMenu.GetValue<KeyBind>().Key, KeyBindType.Toggle, true));
+                        Variables.MenuManager.FamiliarFollowMenu.SetValue(new KeyBind(Variables.MenuManager.FamiliarFollowMenu.GetValue<KeyBind>().Key, KeyBindType.Toggle, true));
                     }
                     //release lock;
                     FollowHasLock = false; 
