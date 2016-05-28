@@ -2,7 +2,6 @@
 
 **05/28/2016**
 - Fixed familiars stay while Follow Mode is enabled
-- Now Coming out of Combo Mode will not directly switch to Follow Mode. You have to let them follow manually now. 
 
 **05/16/2016**
 - Fixed bugs in LastHit Mode in Randiant
