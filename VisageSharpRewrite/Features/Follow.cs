@@ -56,7 +56,7 @@ namespace VisageSharpRewrite.Features
 
         public void PlayerExecution(ExecuteOrderEventArgs args, List<Unit> familiars)
         {
-            /*
+            
             if (familiarControl.AnyFamiliarNearMe(familiars, 1000))
             {
                 if (args.Order == Order.MoveLocation)
@@ -70,7 +70,7 @@ namespace VisageSharpRewrite.Features
                     }
                 }
             }
-            */
+            
         }
 
 
