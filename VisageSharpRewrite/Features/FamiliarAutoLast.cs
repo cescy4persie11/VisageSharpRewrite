@@ -54,10 +54,10 @@ namespace VisageSharpRewrite.Features
         public void Execute(List<Unit> familiars)
         {
             //Update();
-                
+
             this.setAutoAttackMode();
             if (familiars == null) return;
-            
+
             //Auto Stone if under low attack dmg or health being low  
             foreach (var f in familiars)
             {
@@ -83,7 +83,7 @@ namespace VisageSharpRewrite.Features
                     Game.ExecuteCommand("dota_camera_set_lookatpos " + familiars.FirstOrDefault().Position.X + " " + familiars.FirstOrDefault().Position.Y);
                     looked = true;
                 }
-                
+
                 if (looked)
                 {
                     DelayAction.Add(1500, () =>
@@ -102,7 +102,8 @@ namespace VisageSharpRewrite.Features
             // If there is enemy nearby
             var AnyoneAttackingMe = ObjectManager.TrackingProjectiles.Any(x => x.Target.Name.Equals("npc_dota_visage_familiar1") || x.Target.Name.Equals("npc_dota_visage_familiar2") || x.Target.Name.Equals("npc_dota_visage_familiar3"));
             //Console.WriteLine("anyone attacking me " + AnyoneAttackingMe);
-            foreach (var f in familiars) {
+            foreach (var f in familiars)
+            {
                 Console.WriteLine(f.Name);
             }
             //if no ally creeps nearby, go follow the nearst ally creeps
@@ -121,18 +122,26 @@ namespace VisageSharpRewrite.Features
                     {
                         foreach (var f in familiars)
                         {
-                            f.Follow(me);
-                            //Console.WriteLine("f position " + f.Position);
-                            Console.WriteLine("cloest Ally creep is " + closestAllyCreep.Position);
+                            if (Utils.SleepCheck("move"))
+                            {
+                                f.Follow(me);
+                                //Console.WriteLine("f position " + f.Position);
+                                Console.WriteLine("cloest Ally creep is " + closestAllyCreep.Position);
+                                Utils.Sleep(100, "move");
+                            }
                         }
                     }
                     else {
                         //Console.WriteLine("familiars have to move");
                         foreach (var f in familiars)
                         {
-                            f.Follow(closestAllyCreep);
-                            //Console.WriteLine("f position " + f.Position);
-                            Console.WriteLine("cloest Ally creep is " + closestAllyCreep.Position);
+                            if (Utils.SleepCheck("move"))
+                            {
+                                f.Follow(closestAllyCreep);
+                                //Console.WriteLine("f position " + f.Position);
+                                Console.WriteLine("cloest Ally creep is " + closestAllyCreep.Position);
+                                Utils.Sleep(100, "move");
+                            }
                         }
                     }
                     Utils.Sleep(100, "move");
@@ -144,134 +153,139 @@ namespace VisageSharpRewrite.Features
             //else
             //{
             if (AnyoneAttackingMe)
+            {
+                //go the the cloestallycreeps
+                //var closestAllyCreep = ObjectManager.GetEntities<Unit>().Where(_x =>
+                //                                                     _x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
+                //                                                     && _x.IsAlive && _x.Team == me.Team
+                //                                                     && _x.Name.Equals("npc_dota_creep_goodguys_ranged"))
+                //                                                     .
+                //                                                     OrderBy(x => x.Distance2D(familiars.FirstOrDefault())
+                //                                                    ).FirstOrDefault();
+                //Console.WriteLine("cloest allu creeps " + closestAllyCreep.Name);
+                if (closestAllyCreep == null) return;
+                if (Utils.SleepCheck("move"))
                 {
-                    //go the the cloestallycreeps
-                    //var closestAllyCreep = ObjectManager.GetEntities<Unit>().Where(_x =>
-                    //                                                     _x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
-                    //                                                     && _x.IsAlive && _x.Team == me.Team
-                    //                                                     && _x.Name.Equals("npc_dota_creep_goodguys_ranged"))
-                    //                                                     .
-                    //                                                     OrderBy(x => x.Distance2D(familiars.FirstOrDefault())
-                    //                                                    ).FirstOrDefault();
-                    //Console.WriteLine("cloest allu creeps " + closestAllyCreep.Name);
-                    if (closestAllyCreep == null) return;
-                    if (Utils.SleepCheck("move"))
+                    foreach (var f in familiars)
                     {
-                        foreach (var f in familiars)
-                        {
-                            f.Follow(me);
-                        }
-                        Utils.Sleep(100, "move");
+                        f.Follow(me);
                     }
-                return;
+                    Utils.Sleep(1000, "move");
                 }
+                return;
+            }
             //else
             //{
-            if (familiarControl.AnyAllyCreepsAroundFamiliar(familiars)) { 
+            if (familiarControl.AnyAllyCreepsAroundFamiliar(familiars))
+            {
                 // has enemy creeps around
                 //AutoLastHit Mode
                 getLowestHpCreep(familiars.FirstOrDefault(), 1000);
-                    if (this._LowestHpCreep == null) return;
-                    getKillableCreep(familiars.FirstOrDefault(), this._LowestHpCreep);
-                    if (this._creepTarget == null) return;
-                    if (this._creepTarget.IsValid && this._creepTarget.IsVisible && this._creepTarget.IsAlive)
+                if (this._LowestHpCreep == null) return;
+                getKillableCreep(familiars.FirstOrDefault(), this._LowestHpCreep);
+                if (this._creepTarget == null) return;
+                if (this._creepTarget.IsValid && this._creepTarget.IsVisible && this._creepTarget.IsAlive)
+                {
+                    var damageThreshold = GetDmanageOnTargetFromSource(familiars.FirstOrDefault(), _creepTarget, 0);
+                    var numOfMeleeOnKillable = NumOfMeleeCreepsAttackingMe(_creepTarget);
+                    var numOfRangedOnKillable = NumOfRangedCreepsAttackingMe(_creepTarget);
+                    if (numOfMeleeOnKillable + numOfRangedOnKillable != 0)
                     {
-                        var damageThreshold = GetDmanageOnTargetFromSource(familiars.FirstOrDefault(), _creepTarget, 0);
-                        var numOfMeleeOnKillable = NumOfMeleeCreepsAttackingMe(_creepTarget);
-                        var numOfRangedOnKillable = NumOfRangedCreepsAttackingMe(_creepTarget);
-                        if (numOfMeleeOnKillable + numOfRangedOnKillable != 0)
-                        {
-                            var AttackableFamiliar = familiars.Where(x => x.CanAttack()
-                                                            
-                            && x.Modifiers.Any(y => y.Name == "modifier_visage_summon_familiars_damage_charge")
-                                                                     && x.IsAlive
-                                                                     );
-                            var AttackableFamilarInRange = familiars.Where(x => x.CanAttack()
-                                                                     && x.Modifiers.Any(y => y.Name == "modifier_visage_summon_familiars_damage_charge")
-                                                                     && x.Distance2D(_creepTarget) <= x.AttackRange
-                                                                     );
+                        var AttackableFamiliar = familiars.Where(x => x.CanAttack()
 
-                            if (AttackableFamiliar == null) return;
-                            if (AttackableFamiliar.All<Unit>(f => _creepTarget.Distance2D(f) <= f.AttackRange && f.CanAttack()))
+                        && x.Modifiers.Any(y => y.Name == "modifier_visage_summon_familiars_damage_charge")
+                                                                 && x.IsAlive
+                                                                 );
+                        var AttackableFamilarInRange = familiars.Where(x => x.CanAttack()
+                                                                 && x.Modifiers.Any(y => y.Name == "modifier_visage_summon_familiars_damage_charge")
+                                                                 && x.Distance2D(_creepTarget) <= x.AttackRange
+                                                                 );
+
+                        if (AttackableFamiliar == null) return;
+                        if (AttackableFamiliar.All<Unit>(f => _creepTarget.Distance2D(f) <= f.AttackRange && f.CanAttack()))
+                        {
+                            var familiarDmg = AttackableFamilarInRange.Sum(f => GetDmanageOnTargetFromSource(f, _creepTarget, 0));
+                            //Console.WriteLine("familiar dmg is " + familiarDmg);
+                            if (_creepTarget.Health < familiarDmg)
                             {
-                                var familiarDmg = AttackableFamilarInRange.Sum(f => GetDmanageOnTargetFromSource(f, _creepTarget, 0));
-                                //Console.WriteLine("familiar dmg is " + familiarDmg);
-                                if (_creepTarget.Health < familiarDmg)
+                                foreach (var f in AttackableFamiliar)
+                                {
+                                    if (!f.IsAttacking())
+                                    {
+                                        if (Utils.SleepCheck("familiarAttack"))
+                                        {
+                                            f.Attack(_creepTarget);
+                                            Utils.Sleep(200, "familiarAttack");
+                                        }
+                                    }
+                                }
+                            }
+                            else if (_creepTarget.Health < familiarDmg * 2 && _creepTarget.Health > familiarDmg)
+                            //attack-hold
+                            {
+                                if (Utils.SleepCheck("familiarAttack"))
                                 {
                                     foreach (var f in AttackableFamiliar)
                                     {
-                                        if (!f.IsAttacking())
-                                        {
-                                            f.Attack(_creepTarget);
-                                        }
+                                        f.Hold();
+                                        f.Attack(_creepTarget);
                                     }
+                                    Utils.Sleep(100, "familiarAttack");
                                 }
-                                else if(_creepTarget.Health < familiarDmg * 2 && _creepTarget.Health > familiarDmg)
-                                //attack-hold
+                            }
+                            else
+                            {
+                                if (AttackableFamiliar.Any<Unit>(x => x.Distance2D(_creepTarget) > x.AttackRange) && _creepTarget.ClassID != ClassID.CDOTA_BaseNPC_Creep_Siege)
                                 {
-                                    if (Utils.SleepCheck("familiarAttack"))
+                                    if (Utils.SleepCheck("familiarmove"))
                                     {
                                         foreach (var f in AttackableFamiliar)
                                         {
-                                            f.Hold();
-                                            f.Attack(_creepTarget);
+                                            f.Move(this._LowestHpCreep.Position);
                                         }
-                                        Utils.Sleep(100, "familiarAttack");
+                                        Utils.Sleep(100, "familiarmove");
                                     }
-                                }
-                                else
-                                {
-                                    if (AttackableFamiliar.Any<Unit>(x => x.Distance2D(_creepTarget) > x.AttackRange) && _creepTarget.ClassID != ClassID.CDOTA_BaseNPC_Creep_Siege)
-                                    {
-                                        if (Utils.SleepCheck("familiarmove"))
-                                        {
-                                            foreach (var f in AttackableFamiliar)
-                                            {
-                                                f.Move(this._LowestHpCreep.Position);
-                                            }
-                                            Utils.Sleep(100, "familiarmove");
-                                        }
 
-                                    }
                                 }
                             }
-                            else // not in range
-                            {
-                                if (Utils.SleepCheck("move") && _creepTarget.ClassID != ClassID.CDOTA_BaseNPC_Creep_Siege)
-                                {
-                                    foreach (var f in familiars)
-                                    {
-                                        f.Move(_creepTarget.Position);
-                                    }
-                                    Utils.Sleep(200, "move");
-                                }
-                            }
-
                         }
-                        else
+                        else // not in range
                         {
-                            var AttackableFamilarInRange = familiars.Where(x => x.CanAttack()
-                                                                    && x.Modifiers.Any(y => y.Name == "modifier_visage_summon_familiars_damage_charge")
-                                                                    && x.Distance2D(_creepTarget) <= x.AttackRange
-                                                                    );
-                            var familiarDmg = AttackableFamilarInRange.Sum(f => GetDmanageOnTargetFromSource(f, _creepTarget, 0));
-                            if (Utils.SleepCheck("attack") && _creepTarget.Health < familiarDmg * 1.5)
+                            if (Utils.SleepCheck("move") && _creepTarget.ClassID != ClassID.CDOTA_BaseNPC_Creep_Siege)
                             {
                                 foreach (var f in familiars)
                                 {
-                                    if (_creepTarget.ClassID != ClassID.CDOTA_BaseNPC_Creep_Siege)
-                                    {
-                                        f.Attack(_creepTarget);
-
-                                    }
-                                    Utils.Sleep(200, "attack");
+                                    f.Move(_creepTarget.Position);
                                 }
+                                Utils.Sleep(200, "move");
+                            }
+                        }
+
+                    }
+                    else
+                    {
+                        var AttackableFamilarInRange = familiars.Where(x => x.CanAttack()
+                                                                && x.Modifiers.Any(y => y.Name == "modifier_visage_summon_familiars_damage_charge")
+                                                                && x.Distance2D(_creepTarget) <= x.AttackRange
+                                                                );
+                        var familiarDmg = AttackableFamilarInRange.Sum(f => GetDmanageOnTargetFromSource(f, _creepTarget, 0));
+                        if (Utils.SleepCheck("attack") && _creepTarget.Health < familiarDmg * 1.5)
+                        {
+                            foreach (var f in familiars)
+                            {
+                                if (_creepTarget.ClassID != ClassID.CDOTA_BaseNPC_Creep_Siege)
+                                {
+                                    f.Attack(_creepTarget);
+
+                                }
+                                Utils.Sleep(200, "attack");
                             }
                         }
                     }
                 }
+            }
             //}
-            
+
 
 
         }
@@ -393,7 +407,7 @@ namespace VisageSharpRewrite.Features
 
         public void setAutoAttackMode()
         {
-            if(Variables.InAutoLasthiMode && this.autoAttackMode == 2)
+            if (Variables.InAutoLasthiMode && this.autoAttackMode == 2)
             {
                 this.autoAttackMode = 0;
                 Game.ExecuteCommand("dota_player_units_auto_attack_mode " + this.autoAttackMode);
@@ -407,7 +421,7 @@ namespace VisageSharpRewrite.Features
 
         private void resetAutoAttackMode()
         {
-            if(this.autoAttackMode == 0)
+            if (this.autoAttackMode == 0)
             {
                 this.autoAttackMode = 2;
                 Game.ExecuteCommand("dota_player_units_auto_attack_mode " + this.autoAttackMode);
@@ -418,7 +432,7 @@ namespace VisageSharpRewrite.Features
         {
 
         }
-        
+
 
     }
 }

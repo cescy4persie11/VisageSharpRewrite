@@ -1,5 +1,8 @@
 # VisageSharpRewrite
 
+**05/30/2016**
+- Fixed lasthit Mode
+
 **05/28/2016**
 - Fixed familiars stay while Follow Mode is enabled
 
