@@ -2,6 +2,8 @@
 
 **05/30/2016**
 - Fixed lasthit Mode
+- Fixed stone condition
+- Reverse follow mode
 
 **05/28/2016**
 - Fixed familiars stay while Follow Mode is enabled
