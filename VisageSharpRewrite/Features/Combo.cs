@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using VisageSharpRewrite.Abilities;
 using Ensage.Common.Extensions;
 using SharpDX;
+using VisageSharpRewrite.Utilities;
 
 namespace VisageSharpRewrite.Features
 {
@@ -46,6 +47,9 @@ namespace VisageSharpRewrite.Features
 
         private AutoNuke autoNuke;
 
+        private Dictionary<float, Orbwalker> orbwalkerDictionary = new Dictionary<float, Orbwalker>();
+
+
         public Combo()
         {
             hasLens = false;
@@ -58,13 +62,33 @@ namespace VisageSharpRewrite.Features
             this.hasLens = me.Inventory.Items.Any(x => x.Name == "item_aether_lens");
         }
 
+        public void FamiliarOrbwalk(List<Unit> familiars, Hero Target)
+        {
+            if (familiars == null) return;
+            if (Target == null) return;
+            if (familiars.All(x => !x.CanMove())) return;
+            Orbwalker orbwalker;
+            foreach (var f in familiars)
+            {
+                if (!orbwalkerDictionary.TryGetValue(f.Handle, out orbwalker))
+                {
+                    orbwalker = new Orbwalker(f);
+                    orbwalkerDictionary.Add(f.Handle, orbwalker);
+                }
+                orbwalker.OrbwalkOn(Target);
+            }
+
+        }
+
         public void Execute(Hero me, Hero target, List<Unit> familiars)
         {
             if (!me.IsAlive) return;
             if (target == null) return;
             Update(me);
             itemUsage.OffensiveItem(target);
+            //
             //all within attack range
+            FamiliarOrbwalk(familiars, target);
             if (familiars.Any(f => f.Distance2D(target) <= f.AttackRange + 100))
             {
                 if (Utils.SleepCheck("stone"))
@@ -76,14 +100,17 @@ namespace VisageSharpRewrite.Features
                             familiarControl.UseStone(f);
                         }
                         else
-                        {
+                        {                       
+                            /*
                             if (familiarControl.NotMuchDmgLeft(f))
                             {
                                 f.Move(f.Spellbook.SpellQ.GetPrediction(target));
                             }
                             else {
-                                f.Attack(target);
+                                //familiarControl.FamiliarOrbwalk(f, target);
+                                //f.Attack(target);
                             }
+                            */
                         }
                     }
                     Utils.Sleep(300, "stone");
@@ -92,6 +119,7 @@ namespace VisageSharpRewrite.Features
             }
             else {
                 //Console.WriteLine("now move to new target");
+                /*
                 if (Utils.SleepCheck("move"))
                 {
                     foreach (var f in familiars)
@@ -106,6 +134,7 @@ namespace VisageSharpRewrite.Features
                     }
                     Utils.Sleep(300, "move");
                 }
+                */
             }
 
             

@@ -8,6 +8,7 @@ using Ensage.Common;
 using Ensage.Common.Extensions;
 using Ensage.Common.Objects;
 using SharpDX;
+using VisageSharpRewrite.Utilities;
 
 namespace VisageSharpRewrite.Abilities
 {
@@ -28,6 +29,7 @@ namespace VisageSharpRewrite.Abilities
         public bool FamiliarCanStoneEnemies(Hero target, Unit f)
         {
             return f.Spellbook.SpellQ.CanBeCasted() && (f.BonusDamage < 20) && f.Distance2D(target) <= 250
+                && !Variables.Familiars.Any(x => x.Spellbook.SpellQ.IsInAbilityPhase)
                 // exclude a situation where familiars are in the summon phase
                 && Variables.Hero.Spellbook.Spell4.Cooldown <= 200 - Variables.Hero.Spellbook.Spell4.Level * 20 - 5; 
         }

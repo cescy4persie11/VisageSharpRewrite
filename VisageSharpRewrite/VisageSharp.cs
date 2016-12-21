@@ -36,6 +36,8 @@ namespace VisageSharpRewrite
 
         private FamiliarAutoLast familiarAutoLastHit;
 
+        private TalentAbuse talentAbuse;
+
         private AutoNuke autoNuke;
 
         private Follow follow;
@@ -108,9 +110,26 @@ namespace VisageSharpRewrite
             this.drawText = new DrawText();
             this.targetFind = new TargetFind();
             this.combo = new Combo();
+            this.talentAbuse = new TalentAbuse();
             Game.PrintMessage(
                 "VisageSharp" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version + " loaded",
                 MessageType.LogMessage);
+        }
+
+        public void OnUpdate_TalentAbuse()
+        {
+            if (Game.IsPaused)
+            {
+                //this.pause = Game.IsPaused;
+                return;
+            }
+
+            if (this.pause || Variables.Hero == null || !Variables.Hero.IsValid || !Variables.Hero.IsAlive)
+            {
+                return;
+            }
+            if (!Variables.InAutoLasthiMode) return;
+            talentAbuse.Execute();
         }
 
         public void OnUpdate_AutoLastHit()

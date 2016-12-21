@@ -102,10 +102,6 @@ namespace VisageSharpRewrite.Features
             // If there is enemy nearby
             var AnyoneAttackingMe = ObjectManager.TrackingProjectiles.Any(x => x.Target.Name.Equals("npc_dota_visage_familiar1") || x.Target.Name.Equals("npc_dota_visage_familiar2") || x.Target.Name.Equals("npc_dota_visage_familiar3"));
             //Console.WriteLine("anyone attacking me " + AnyoneAttackingMe);
-            foreach (var f in familiars)
-            {
-                Console.WriteLine(f.Name);
-            }
             //if no ally creeps nearby, go follow the nearst ally creeps
             var closestAllyCreep = ObjectManager.GetEntities<Unit>().Where(_x =>
                                                                           _x.ClassID == ClassID.CDOTA_BaseNPC_Creep_Lane
@@ -122,26 +118,26 @@ namespace VisageSharpRewrite.Features
                     {
                         foreach (var f in familiars)
                         {
-                            if (Utils.SleepCheck("move"))
-                            {
+                            //if (Utils.SleepCheck("move"))
+                            //{
                                 f.Follow(me);
                                 //Console.WriteLine("f position " + f.Position);
-                                Console.WriteLine("cloest Ally creep is " + closestAllyCreep.Position);
-                                Utils.Sleep(100, "move");
-                            }
+                                //Console.WriteLine("cloest Ally creep is " + closestAllyCreep.Position);
+                                //Utils.Sleep(100, "move");
+                            //}
                         }
                     }
                     else {
                         //Console.WriteLine("familiars have to move");
                         foreach (var f in familiars)
                         {
-                            if (Utils.SleepCheck("move"))
-                            {
+                            //if (Utils.SleepCheck("move"))
+                            //{
                                 f.Follow(closestAllyCreep);
                                 //Console.WriteLine("f position " + f.Position);
-                                Console.WriteLine("cloest Ally creep is " + closestAllyCreep.Position);
-                                Utils.Sleep(100, "move");
-                            }
+                                //Console.WriteLine("cloest Ally creep is " + closestAllyCreep.Position);
+                            //    Utils.Sleep(100, "move");
+                            //}
                         }
                     }
                     Utils.Sleep(100, "move");

@@ -49,6 +49,7 @@ namespace VisageSharpRewrite
             this.visageSharp.OnUpdate_Follow();
             this.visageSharp.OnUpdate_MenuControl();
             this.visageSharp.OnUpdate_Combo();
+            //this.visageSharp.OnUpdate_TalentAbuse();
         }
 
         private void Game_OnWndProc(WndEventArgs args)

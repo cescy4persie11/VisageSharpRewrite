@@ -1,0 +1,13 @@
+C:\Users\Feiyang\Documents\Visual Studio 2015\Projects\VisageSharpRewrite\VisageSharpRewrite\bin\Release\VisageSharpRewrite.exe.config
+C:\Users\Feiyang\Documents\Visual Studio 2015\Projects\VisageSharpRewrite\VisageSharpRewrite\bin\Release\VisageSharpRewrite.exe
+C:\Users\Feiyang\Documents\Visual Studio 2015\Projects\VisageSharpRewrite\VisageSharpRewrite\bin\Release\VisageSharpRewrite.pdb
+C:\Users\Feiyang\Documents\Visual Studio 2015\Projects\VisageSharpRewrite\VisageSharpRewrite\bin\Release\Ensage.Common.dll
+C:\Users\Feiyang\Documents\Visual Studio 2015\Projects\VisageSharpRewrite\VisageSharpRewrite\bin\Release\Ensage.dll
+C:\Users\Feiyang\Documents\Visual Studio 2015\Projects\VisageSharpRewrite\VisageSharpRewrite\bin\Release\SharpDX.Direct3D9.dll
+C:\Users\Feiyang\Documents\Visual Studio 2015\Projects\VisageSharpRewrite\VisageSharpRewrite\bin\Release\SharpDX.dll
+C:\Users\Feiyang\Documents\Visual Studio 2015\Projects\VisageSharpRewrite\VisageSharpRewrite\bin\Release\SharpDX.XInput.dll
+C:\Users\Feiyang\Documents\Visual Studio 2015\Projects\VisageSharpRewrite\VisageSharpRewrite\bin\Release\Newtonsoft.Json.dll
+C:\Users\Feiyang\Documents\Visual Studio 2015\Projects\VisageSharpRewrite\VisageSharpRewrite\bin\Release\Ensage.Common.pdb
+C:\Users\Feiyang\Documents\Visual Studio 2015\Projects\VisageSharpRewrite\VisageSharpRewrite\obj\x64\Release\VisageSharpRewrite.exe
+C:\Users\Feiyang\Documents\Visual Studio 2015\Projects\VisageSharpRewrite\VisageSharpRewrite\obj\x64\Release\VisageSharpRewrite.pdb
+C:\Users\Feiyang\Documents\Visual Studio 2015\Projects\VisageSharpRewrite\VisageSharpRewrite\obj\x64\Release\VisageSharpRewrite.csprojResolveAssemblyReference.cache
