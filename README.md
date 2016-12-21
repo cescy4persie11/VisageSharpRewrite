@@ -1,5 +1,11 @@
 # VisageSharpRewrite
 
+**12/20/2016**
+- Updates for 7.00
+- familiar auto orbwalk
+- slight fixes to familiar stones
+
+
 **05/30/2016**
 - Fixed lasthit Mode
 - Fixed stone condition
